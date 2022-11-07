@@ -51,12 +51,18 @@ class Ed
       send("command_#{@command}")
     rescue StandardError
       @cmd_flg = false
+      nil
     end
   end
 
   # アドレスの記号を数値に変換
   def address_replace
     return if @address.nil?
+
+    if @address[0] == ','
+      @address = "1,#{@buffer.length}"
+      return
+    end
 
     address_1 = @address.split(',')[0]
     address_2 = @address.split(',')[1]
@@ -66,9 +72,6 @@ class Ed
       address_1 = @current.to_s
     when '$'
       address_1 = @buffer.length.to_s
-    when ','
-      @address = "1,#{@buffer.length}"
-      return
     when ';'
       @address = "#{@current},#{@buffer.length}"
       return
@@ -91,14 +94,18 @@ class Ed
   # アドレスのバリデーション
   def address_validate
     # アドレスに0があるならエラー
-    if @address.split(',')[0].to_i.zero?
-      @cmd_flg = false
-      true
+    if @address.split(',').length.positive?
+      if @address.split(',')[0].to_i.zero?
+        @cmd_flg = false
+        return true
+      end
+    elsif @address.split(',').length > 1
+      if @address.split(',')[1].to_i.zero?
+        @cmd_flg = false
+        return true
+      end
     end
-    if @address.split(',')[1].to_i.zero?
-      @cmd_flg = false
-      true
-    end
+    false
   end
 
   def command_q
@@ -115,41 +122,46 @@ class Ed
     return if address_validate
 
     if @address.split(',').length == 1
-      if @address.split(',')[0].to_i - 1 <= @buffer.length
+
+      if @address.split(',')[0].to_i <= @buffer.length
         puts @buffer[@address.split(',')[0].to_i - 1]
         @current = @address.split(',')[0].to_i
       else
         @cmd_flg = false
+        return
       end
-    elsif @address.split(',')[1].to_i - 1 <= @buffer.length
+    elsif @address.split(',')[1].to_i <= @buffer.length
       (@address.split(',')[0].to_i - 1..@address.split(',')[1].to_i - 1).each do |i|
         puts @buffer[i]
       end
       @current = @address.split(',')[1].to_i
     else
       @cmd_flg = false
+      return
     end
   end
 
   def command_n
-    @address = @current if @address.nil?
+    @address = @current.to_s if @address.nil?
 
     return if address_validate
 
     if @address.split(',').length == 1
-      if @address.split(',')[0].to_i - 1 <= @buffer.length
+      if @address.split(',')[0].to_i <= @buffer.length
         puts "#{@address.split(',')[0].to_i}    #{@buffer[@address.split(',')[0].to_i - 1]}"
         @current = @address.split(',')[0].to_i
       else
         @cmd_flg = false
+        return
       end
-    elsif @address.split(',')[1].to_i - 1 <= @buffer.length
+    elsif @address.split(',')[1].to_i <= @buffer.length
       (@address.split(',')[0].to_i - 1..@address.split(',')[1].to_i - 1).each do |i|
         puts "#{i}    #{@buffer[i]}"
       end
       @current = @address.split(',')[1].to_i
     else
       @cmd_flg = false
+      return
     end
   end
 
@@ -163,13 +175,14 @@ class Ed
 
     del_targets = []
     if @address.split(',').length == 1
-      if @address.split(',')[0].to_i - 1 <= @buffer.length
+      if @address.split(',')[0].to_i <= @buffer.length
         @buffer.delete_at(@address.split(',')[0].to_i - 1)
         @current = @address.split(',')[0].to_i
       else
         @cmd_flg = false
+        return
       end
-    elsif @address.split(',')[1].to_i - 1 <= @buffer.length
+    elsif @address.split(',')[1].to_i <= @buffer.length
       (@address.split(',')[0].to_i..@address.split(',')[1].to_i).each do |i|
         del_targets << i
       end
@@ -177,28 +190,67 @@ class Ed
       @current = @address.split(',')[1].to_i
     else
       @cmd_flg = false
+      return
     end
   end
 
   # 改行コマンド
   def command_
+    @address = (@current + 1).to_s if @address.nil?
+
+    return if address_validate
+
     if @address.split(',').length == 1
-      if @address.split(',')[0].to_i - 1 <= @buffer.length
+      if @address.split(',')[0].to_i <= @buffer.length
         @current = @address.split(',')[0].to_i
       else
         @cmd_flg = false
+        return
       end
-    elsif @address.split(',')[1].to_i - 1 <= @buffer.length
+    elsif @address.split(',')[1].to_i <= @buffer.length
       (@address.split(',')[0].to_i..@address.split(',')[1].to_i).each do |i|
         @current = i
       end
     else
       @cmd_flg = false
+      return
     end
+    puts @buffer[@current - 1]
   end
 
   def command_a
-    # TODO: Implement me.
+    @address = @current.to_s if @address.nil?
+
+    return if address_validate
+
+    lines = []
+    loop do
+      lines << $stdin.gets.chomp
+      if lines.last == '.'
+        lines.pop
+        break
+      end
+    end
+
+    if @address.split(',').length == 1
+      if @address.split(',')[0].to_i <= @buffer.length
+        lines.each_with_index do |l, i|
+          @buffer.insert(@address.split(',')[0].to_i + i, l)
+        end
+        @current = @address.split(',')[0].to_i + lines.length
+      else
+        @cmd_flg = false
+        return
+      end
+    elsif @address.split(',')[1].to_i <= @buffer.length
+      lines.each_with_index do |l, i|
+        @buffer.insert(@address.split(',')[1].to_i + i, l)
+      end
+      @current = @address.split(',')[1].to_i + lines.length
+    else
+      @cmd_flg = false
+      return
+    end
   end
 
   def command_c
