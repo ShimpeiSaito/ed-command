@@ -6,9 +6,10 @@ class Ed
     @address = '' # コマンドのアドレス部
     @command = '' # コマンドのコマンド部
     @parameter = '' # コマンドのパラメータ部
-    @buffer = []
-    @current = 0
+    @buffer = [] # バッファ
+    @current = 0 # カレント行
 
+    # ファイルがあれば読み込み、なければ標準入力を受け付ける
     begin
       unless ARGV.empty?
         @buffer = ARGF.readlines
@@ -25,10 +26,12 @@ class Ed
     end
   end
 
+  # コマンドの入力を受け取る
   def _read
     @input = $stdin.gets.chomp
   end
 
+  # コマンドの解析と処理
   def _eval
     addr = '(?:\d+|[.$,;]|\/.*\/)'
     cmnd = '(?:wq|[acdfijnpqrw=]|\z)'
@@ -51,6 +54,7 @@ class Ed
     end
   end
 
+  # アドレスの記号を数値に変換
   def address_replace
     return if @address.nil?
 
@@ -84,8 +88,14 @@ class Ed
     @address = "#{address_1},#{address_2}"
   end
 
+  # アドレスのバリデーション
   def address_validate
+    # アドレスに0があるならエラー
     if @address.split(',')[0].to_i.zero?
+      @cmd_flg = false
+      true
+    end
+    if @address.split(',')[1].to_i.zero?
       @cmd_flg = false
       true
     end
@@ -170,6 +180,7 @@ class Ed
     end
   end
 
+  # 改行コマンド
   def _command
     if @address.split(',').length == 1
       if @address.split(',')[0].to_i - 1 <= @buffer.length
@@ -186,6 +197,7 @@ class Ed
     end
   end
 
+  # エラー時に?を表示
   def _print
     puts '?' unless @cmd_flg
     @cmd_flg = true
