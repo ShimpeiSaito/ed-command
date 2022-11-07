@@ -48,7 +48,7 @@ class Ed
     begin
       address_replace
       p @address, @command, @parameter
-      send("#{@command}_command")
+      send("command_#{@command}")
     rescue StandardError
       @cmd_flg = false
     end
@@ -101,7 +101,7 @@ class Ed
     end
   end
 
-  def q_command
+  def command_q
     unless @address == '' || @parameter == ''
       @cmd_flg = false
       return
@@ -109,7 +109,7 @@ class Ed
     exit
   end
 
-  def p_command
+  def command_p
     @address = @current.to_s if @address.nil?
 
     return if address_validate
@@ -131,7 +131,7 @@ class Ed
     end
   end
 
-  def n_command
+  def command_n
     @address = @current if @address.nil?
 
     return if address_validate
@@ -153,7 +153,7 @@ class Ed
     end
   end
 
-  def d_command
+  def command_d
     return if address_validate
 
     unless @parameter == ''
@@ -181,7 +181,7 @@ class Ed
   end
 
   # 改行コマンド
-  def _command
+  def command_
     if @address.split(',').length == 1
       if @address.split(',')[0].to_i - 1 <= @buffer.length
         @current = @address.split(',')[0].to_i
@@ -195,6 +195,38 @@ class Ed
     else
       @cmd_flg = false
     end
+  end
+
+  def command_a
+    # TODO: Implement me.
+  end
+
+  def command_c
+    # TODO: Implement me.
+  end
+
+  def command_f
+    # TODO: Implement me.
+  end
+
+  def command_i
+    # TODO: Implement me.
+  end
+
+  def command_j
+    # TODO: Implement me.
+  end
+
+  def command_w
+    # TODO: Implement me.
+  end
+
+  def command_wq
+    # TODO: Implement me.
+  end
+
+  def command_=
+    # TODO: Implement me.
   end
 
   # エラー時に?を表示
