@@ -1,3 +1,7 @@
+# frozen_string_literal: true
+
+require 'optparse'
+
 class Ed
   # TODO: 全体的なリファクタリング
   def initialize()
@@ -8,6 +12,16 @@ class Ed
     @parameter = '' # コマンドのパラメータ部
     @buffer = [] # バッファ
     @current = 0 # カレント行
+    @prompt = '' # プロンプト
+
+    # プロントプトのオプションがあれば設定する
+    OptionParser.new do |op|
+      op.banner = 'Usage: ed.rb [options]'
+      op.on('-p PROMPT') do |p|
+        @prompt = p
+      end
+      op.parse!(ARGV)
+    end
 
     # ファイルがあれば読み込み、なければ標準入力を受け付ける
     begin
@@ -28,6 +42,7 @@ class Ed
 
   # コマンドの入力を受け取る
   def _read
+    print @prompt
     @input = $stdin.gets.chomp
   end
 
@@ -59,10 +74,7 @@ class Ed
   def address_replace
     return if @address.nil?
 
-    if @address[0] == ','
-      @address = "1,#{@buffer.length}"
-      return
-    end
+    return @address = "1,#{@buffer.length}" if @address[0] == ','
 
     address_1 = @address.split(',')[0]
     address_2 = @address.split(',')[1]
@@ -73,8 +85,7 @@ class Ed
     when '$'
       address_1 = @buffer.length.to_s
     when ';'
-      @address = "#{@current},#{@buffer.length}"
-      return
+      return @address = "#{@current},#{@buffer.length}"
     end
 
     case @address.split(',')[1]
