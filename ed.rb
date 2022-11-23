@@ -12,7 +12,7 @@ class Ed
     @buffer = [] # バッファ
     @current = 0 # カレント行
     @prompt = '' # プロンプト
-    @file = ''
+    @file = '' # ファイル名
 
     # プロントプトのオプションがあれば設定する
     OptionParser.new do |op|
@@ -63,7 +63,7 @@ class Ed
 
     begin
       address_replace
-      p @address, @command, @parameter
+      # p @address, @command, @parameter
       send("command_#{@command}")
     rescue StandardError
       @cmd_flg = false
@@ -320,7 +320,24 @@ class Ed
   end
 
   def command_j
-    # TODO: Implement me.
+    return if address_validate
+
+    sp_address = @address.split(',')
+
+    return if sp_address.length == 1
+
+    if sp_address[1].to_i <= @buffer.length
+      join_lines = []
+      (sp_address[0].to_i..sp_address[1].to_i).each do |idx|
+        join_lines << @buffer[idx - 1].chomp
+      end
+      @buffer.slice!(sp_address[0].to_i - 1, join_lines.length)
+      @buffer.insert(sp_address[0].to_i - 1, join_lines.join)
+      @current = sp_address[0].to_i
+    else
+      @cmd_flg = false
+      return
+    end
   end
 
   def command_w
