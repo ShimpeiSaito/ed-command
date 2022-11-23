@@ -3,7 +3,6 @@
 require 'optparse'
 
 class Ed
-  # TODO: 全体的なリファクタリング
   def initialize()
     @input = '' # コマンドの入力
     @cmd_flg = true # 適切なコマンドかのフラグ
@@ -175,7 +174,7 @@ class Ed
       end
     elsif sp_address[1].to_i <= @buffer.length
       (sp_address[0].to_i - 1..sp_address[1].to_i - 1).each do |i|
-        puts "#{i}    #{@buffer[i]}"
+        puts "#{i + 1}    #{@buffer[i]}"
       end
       @current = sp_address[1].to_i
     else
@@ -279,7 +278,9 @@ class Ed
   end
 
   def command_c
-    # TODO: Implement me.
+    command_d
+    @address = @address.split(',')[0]
+    command_i
   end
 
   def command_f
@@ -287,7 +288,40 @@ class Ed
   end
 
   def command_i
-    # TODO: Implement me.
+    @address = @current.to_s if @address.nil?
+
+    return if address_validate
+
+    sp_address = @address.split(',')
+
+    lines = []
+    loop do
+      lines << $stdin.gets.chomp
+      if lines.last == '.'
+        lines.pop
+        break
+      end
+    end
+
+    if sp_address.length == 1
+      if sp_address[0].to_i <= @buffer.length
+        lines.each_with_index do |l, i|
+          @buffer.insert(sp_address[0].to_i + i - 1, l)
+        end
+        @current = sp_address[0].to_i + lines.length
+      else
+        @cmd_flg = false
+        return
+      end
+    elsif sp_address[1].to_i <= @buffer.length
+      lines.each_with_index do |l, i|
+        @buffer.insert(sp_address[1].to_i + i - 1, l)
+      end
+      @current = sp_address[1].to_i + lines.length
+    else
+      @cmd_flg = false
+      return
+    end
   end
 
   def command_j
