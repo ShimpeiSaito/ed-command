@@ -29,6 +29,8 @@ class Ed
         @file = ARGF.filename
         @buffer = ARGF.readlines
         @current = @buffer.length # カレント行は最後の行
+
+        puts File.size(@file)
       end
     rescue StandardError
       puts "#{ARGF.filename}: No such file or directory"
@@ -126,6 +128,7 @@ class Ed
     false
   end
 
+  # 入力の受け取り
   def get_inputs
     lines = []
     loop do
@@ -138,6 +141,7 @@ class Ed
     lines
   end
 
+  # qコマンド
   def command_q
     unless @address == '' || @parameter == ''
       @cmd_flg = false
@@ -146,6 +150,7 @@ class Ed
     exit
   end
 
+  # pコマンド
   def command_p
     return if address_validate
 
@@ -158,7 +163,6 @@ class Ed
         @current = sp_address[0].to_i
       else
         @cmd_flg = false
-        return
       end
     elsif sp_address[1].to_i <= @buffer.length
       (sp_address[0].to_i - 1..sp_address[1].to_i - 1).each do |i|
@@ -167,10 +171,10 @@ class Ed
       @current = sp_address[1].to_i
     else
       @cmd_flg = false
-      return
     end
   end
 
+  # nコマンド
   def command_n
     return if address_validate
 
@@ -182,7 +186,6 @@ class Ed
         @current = sp_address[0].to_i
       else
         @cmd_flg = false
-        return
       end
     elsif sp_address[1].to_i <= @buffer.length
       (sp_address[0].to_i - 1..sp_address[1].to_i - 1).each do |i|
@@ -191,10 +194,10 @@ class Ed
       @current = sp_address[1].to_i
     else
       @cmd_flg = false
-      return
     end
   end
 
+  # dコマンド
   def command_d
     return if address_validate
 
@@ -212,7 +215,6 @@ class Ed
         @current = sp_address[0].to_i
       else
         @cmd_flg = false
-        return
       end
     elsif sp_address[1].to_i <= @buffer.length
       (sp_address[0].to_i..sp_address[1].to_i).each do |i|
@@ -222,7 +224,6 @@ class Ed
       @current = sp_address[1].to_i
     else
       @cmd_flg = false
-      return
     end
   end
 
@@ -252,6 +253,7 @@ class Ed
     puts @buffer[@current - 1]
   end
 
+  # aコマンド
   def command_a
     return if address_validate
 
@@ -267,7 +269,6 @@ class Ed
         @current = sp_address[0].to_i + lines.length
       else
         @cmd_flg = false
-        return
       end
     elsif sp_address[1].to_i <= @buffer.length
       lines.each_with_index do |l, i|
@@ -276,21 +277,23 @@ class Ed
       @current = sp_address[1].to_i + lines.length
     else
       @cmd_flg = false
-      return
     end
   end
 
+  # cコマンド
   def command_c
     command_d
     @address = @address.split(',')[0]
     command_i
   end
 
+  # fコマンド
   def command_f
     @file = @parameter unless @parameter == ''
     puts @file
   end
 
+  # iコマンド
   def command_i
     return if address_validate
 
@@ -306,7 +309,6 @@ class Ed
         @current = sp_address[0].to_i + lines.length
       else
         @cmd_flg = false
-        return
       end
     elsif sp_address[1].to_i <= @buffer.length
       lines.each_with_index do |l, i|
@@ -315,10 +317,10 @@ class Ed
       @current = sp_address[1].to_i + lines.length
     else
       @cmd_flg = false
-      return
     end
   end
 
+  # jコマンド
   def command_j
     return if address_validate
 
@@ -336,18 +338,29 @@ class Ed
       @current = sp_address[0].to_i
     else
       @cmd_flg = false
-      return
     end
   end
 
+  # wコマンド
   def command_w
-    # TODO: Implement me.
+    @file = @parameter unless @parameter == ''
+
+    File.open(@file, 'w') do |f|
+      @buffer.each do |line|
+        f.puts(line)
+      end
+    end
+    puts File.size(@file)
   end
 
+  # wqコマンド
   def command_wq
-    # TODO: Implement me.
+    command_w
+    @parameter = ''
+    command_q
   end
 
+  # =コマンド
   def command_=
     @address = @buffer.length.to_s if @address.nil?
 
@@ -361,7 +374,6 @@ class Ed
       puts sp_address[1].to_i
     else
       @cmd_flg = false
-      return
     end
   end
 
