@@ -14,7 +14,7 @@ class Ed
     @prompt = '' # プロンプト
     @file = '' # ファイル名
 
-    # プロントプトのオプションがあれば設定する
+    # プロンプトのオプションがあれば設定する
     OptionParser.new do |op|
       op.banner = 'Usage: ed.rb [options]'
       op.on('-p PROMPT') do |p|
@@ -306,7 +306,7 @@ class Ed
         lines.each_with_index do |l, i|
           @buffer.insert(sp_address[0].to_i + i - 1, l)
         end
-        @current = sp_address[0].to_i + lines.length
+        @current = sp_address[0].to_i + lines.length - 1
       else
         @cmd_flg = false
       end
@@ -314,7 +314,7 @@ class Ed
       lines.each_with_index do |l, i|
         @buffer.insert(sp_address[1].to_i + i - 1, l)
       end
-      @current = sp_address[1].to_i + lines.length
+      @current = sp_address[1].to_i + lines.length - 1
     else
       @cmd_flg = false
     end
