@@ -1,0 +1,286 @@
+===========================================================================
+自家製edコマンド
+===========================================================================
+
+shimpei♔: 🐕 ed-command  ▶ ruby ed.rb -p ">" sample.txt                                           [🐈wとwqコマンドの作成]
+24
+>n
+6    o
+>,
+o
+>;
+o
+>1,5n
+1    aaaf
+2    afaf
+3    ccc
+4    xxxx
+5    af
+>3n
+3    ccc
+>3d
+>n
+3    xxxx
+>,n
+1    aaaf
+2    afaf
+3    xxxx
+4    af
+5    o
+>4d
+>n
+4    o
+>2n
+2    afaf
+>
+xxxx
+>a
+ffffff
+ggggg
+.
+>n
+5    ggggg
+>,n
+1    aaaf
+2    afaf
+3    xxxx
+4    ffffff
+5    ggggg
+6    o
+>3a
+jjjjjj
+llllll
+.
+>n
+5    llllll
+>,n
+1    aaaf
+2    afaf
+3    xxxx
+4    jjjjjj
+5    llllll
+6    ffffff
+7    ggggg
+8    o
+>2,4a
+iiiii
+.
+>n
+5    iiiii
+>,n
+1    aaaf
+2    afaf
+3    xxxx
+4    jjjjjj
+5    iiiii
+6    llllll
+7    ffffff
+8    ggggg
+9    o
+>3,5c
+qwerty
+uiop
+.
+>n
+4    uiop
+>,n
+1    aaaf
+2    afaf
+3    qwerty
+4    uiop
+5    llllll
+6    ffffff
+7    ggggg
+8    o
+>f
+sample.txt
+>f newfile.txt
+newfile.txt
+>n
+8    o
+>5f
+newfile.txt
+>5i
+asdfg
+hjkl
+.
+>n
+6    hjkl
+>,n
+1    aaaf
+2    afaf
+3    qwerty
+4    uiop
+5    asdfg
+6    hjkl
+7    llllll
+8    ffffff
+9    ggggg
+10    o
+>4,7j
+>n
+4    uiopasdfghjklllllll
+>,n
+1    aaaf
+2    afaf
+3    qwerty
+4    uiopasdfghjklllllll
+5    ffffff
+6    ggggg
+7    o
+>w
+52
+>=
+7
+>3=
+3
+>w neofile.txt
+52
+>wq
+52
+
+shimpei♔: 🐕 ed-command  ▶                                                                        [🐈wとwqコマンドの作成]
+
+
+===========================================================================
+本家edコマンド
+===========================================================================
+
+shimpei♔: 🐕 ed-command  ▶ ed -p ">" sample.txt
+24
+>n
+6	o
+>,
+o
+>;
+o
+>1,5n
+1	aaaf
+2	afaf
+3	ccc
+4	xxxx
+5	af
+>3n
+3	ccc
+>3d
+>n
+3	xxxx
+>,n
+1	aaaf
+2	afaf
+3	xxxx
+4	af
+5	o
+>4d
+>n
+4	o
+>2n
+2	afaf
+>
+xxxx
+>a
+fffffff
+ggggg
+.
+>n
+5	ggggg
+>,n
+1	aaaf
+2	afaf
+3	xxxx
+4	fffffff
+5	ggggg
+6	o
+>3a
+jjjjjj
+llllll
+.
+>n
+5	llllll
+>,n
+1	aaaf
+2	afaf
+3	xxxx
+4	jjjjjj
+5	llllll
+6	fffffff
+7	ggggg
+8	o
+>2,4a
+iiiii
+.
+>n
+5	iiiii
+>,n
+1	aaaf
+2	afaf
+3	xxxx
+4	jjjjjj
+5	iiiii
+6	llllll
+7	fffffff
+8	ggggg
+9	o
+>3,5c
+qwerty
+uiop
+.
+>n
+4	uiop
+>,n
+1	aaaf
+2	afaf
+3	qwerty
+4	uiop
+5	llllll
+6	fffffff
+7	ggggg
+8	o
+>f
+sample.txt
+>f newfile.txt
+newfile.txt
+>n
+8	o
+>5f
+?
+>5i
+asdfg
+hjkl
+.
+>n
+6	hjkl
+>,n
+1	aaaf
+2	afaf
+3	qwerty
+4	uiop
+5	asdfg
+6	hjkl
+7	llllll
+8	fffffff
+9	ggggg
+10	o
+>4,7j
+>n
+4	uiopasdfghjklllllll
+>,n
+1	aaaf
+2	afaf
+3	qwerty
+4	uiopasdfghjklllllll
+5	fffffff
+6	ggggg
+7	o
+>w
+53
+>=
+7
+>3=
+3
+>w neofile.txt
+53
+>wq
+53
+
+shimpei♔: 🐕 ed-command  ▶
