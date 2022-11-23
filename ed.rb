@@ -62,7 +62,7 @@ class Ed
 
     begin
       address_replace
-      p @address, @command, @parameter
+      # p @address, @command, @parameter
       send("command_#{@command}")
     rescue StandardError
       @cmd_flg = false
@@ -76,10 +76,12 @@ class Ed
 
     return @address = "1,#{@buffer.length}" if @address[0] == ','
 
-    address_1 = @address.split(',')[0]
-    address_2 = @address.split(',')[1]
+    sp_address = @address.split(',')
 
-    case @address.split(',')[0]
+    address_1 = sp_address[0]
+    address_2 = sp_address[1]
+
+    case sp_address[0]
     when '.'
       address_1 = @current.to_s
     when '$'
@@ -88,14 +90,14 @@ class Ed
       return @address = "#{@current},#{@buffer.length}"
     end
 
-    case @address.split(',')[1]
+    case sp_address[1]
     when '.'
       address_2 = @current.to_s
     when '$'
       address_2 = @buffer.length.to_s
     end
 
-    if @address.split(',')[1].nil?
+    if sp_address[1].nil?
       @address = address_1
       return
     end
@@ -104,14 +106,16 @@ class Ed
 
   # アドレスのバリデーション
   def address_validate
+    sp_address = @address.split(',')
+
     # アドレスに0があるならエラー
-    if @address.split(',').length.positive?
-      if @address.split(',')[0].to_i.zero?
+    if sp_address.length.positive?
+      if sp_address[0].to_i.zero?
         @cmd_flg = false
         return true
       end
-    elsif @address.split(',').length > 1
-      if @address.split(',')[1].to_i.zero?
+    elsif sp_address.length > 1
+      if sp_address[1].to_i.zero?
         @cmd_flg = false
         return true
       end
@@ -132,20 +136,22 @@ class Ed
 
     return if address_validate
 
-    if @address.split(',').length == 1
+    sp_address = @address.split(',')
 
-      if @address.split(',')[0].to_i <= @buffer.length
-        puts @buffer[@address.split(',')[0].to_i - 1]
-        @current = @address.split(',')[0].to_i
+    if sp_address.length == 1
+
+      if sp_address[0].to_i <= @buffer.length
+        puts @buffer[sp_address[0].to_i - 1]
+        @current = sp_address[0].to_i
       else
         @cmd_flg = false
         return
       end
-    elsif @address.split(',')[1].to_i <= @buffer.length
-      (@address.split(',')[0].to_i - 1..@address.split(',')[1].to_i - 1).each do |i|
+    elsif sp_address[1].to_i <= @buffer.length
+      (sp_address[0].to_i - 1..sp_address[1].to_i - 1).each do |i|
         puts @buffer[i]
       end
-      @current = @address.split(',')[1].to_i
+      @current = sp_address[1].to_i
     else
       @cmd_flg = false
       return
@@ -157,19 +163,21 @@ class Ed
 
     return if address_validate
 
-    if @address.split(',').length == 1
-      if @address.split(',')[0].to_i <= @buffer.length
-        puts "#{@address.split(',')[0].to_i}    #{@buffer[@address.split(',')[0].to_i - 1]}"
-        @current = @address.split(',')[0].to_i
+    sp_address = @address.split(',')
+
+    if sp_address.length == 1
+      if sp_address[0].to_i <= @buffer.length
+        puts "#{sp_address[0].to_i}    #{@buffer[sp_address[0].to_i - 1]}"
+        @current = sp_address[0].to_i
       else
         @cmd_flg = false
         return
       end
-    elsif @address.split(',')[1].to_i <= @buffer.length
-      (@address.split(',')[0].to_i - 1..@address.split(',')[1].to_i - 1).each do |i|
+    elsif sp_address[1].to_i <= @buffer.length
+      (sp_address[0].to_i - 1..sp_address[1].to_i - 1).each do |i|
         puts "#{i}    #{@buffer[i]}"
       end
-      @current = @address.split(',')[1].to_i
+      @current = sp_address[1].to_i
     else
       @cmd_flg = false
       return
@@ -184,21 +192,23 @@ class Ed
       return
     end
 
+    sp_address = @address.split(',')
+
     del_targets = []
-    if @address.split(',').length == 1
-      if @address.split(',')[0].to_i <= @buffer.length
-        @buffer.delete_at(@address.split(',')[0].to_i - 1)
-        @current = @address.split(',')[0].to_i
+    if sp_address.length == 1
+      if sp_address[0].to_i <= @buffer.length
+        @buffer.delete_at(sp_address[0].to_i - 1)
+        @current = sp_address[0].to_i
       else
         @cmd_flg = false
         return
       end
-    elsif @address.split(',')[1].to_i <= @buffer.length
-      (@address.split(',')[0].to_i..@address.split(',')[1].to_i).each do |i|
+    elsif sp_address[1].to_i <= @buffer.length
+      (sp_address[0].to_i..sp_address[1].to_i).each do |i|
         del_targets << i
       end
-      @buffer.slice!(@address.split(',')[0].to_i - 1, del_targets.length)
-      @current = @address.split(',')[1].to_i
+      @buffer.slice!(sp_address[0].to_i - 1, del_targets.length)
+      @current = sp_address[1].to_i
     else
       @cmd_flg = false
       return
@@ -211,15 +221,17 @@ class Ed
 
     return if address_validate
 
-    if @address.split(',').length == 1
-      if @address.split(',')[0].to_i <= @buffer.length
-        @current = @address.split(',')[0].to_i
+    sp_address = @address.split(',')
+
+    if sp_address.length == 1
+      if sp_address[0].to_i <= @buffer.length
+        @current = sp_address[0].to_i
       else
         @cmd_flg = false
         return
       end
-    elsif @address.split(',')[1].to_i <= @buffer.length
-      (@address.split(',')[0].to_i..@address.split(',')[1].to_i).each do |i|
+    elsif sp_address[1].to_i <= @buffer.length
+      (sp_address[0].to_i..sp_address[1].to_i).each do |i|
         @current = i
       end
     else
@@ -234,6 +246,8 @@ class Ed
 
     return if address_validate
 
+    sp_address = @address.split(',')
+
     lines = []
     loop do
       lines << $stdin.gets.chomp
@@ -243,21 +257,21 @@ class Ed
       end
     end
 
-    if @address.split(',').length == 1
-      if @address.split(',')[0].to_i <= @buffer.length
+    if sp_address.length == 1
+      if sp_address[0].to_i <= @buffer.length
         lines.each_with_index do |l, i|
-          @buffer.insert(@address.split(',')[0].to_i + i, l)
+          @buffer.insert(sp_address[0].to_i + i, l)
         end
-        @current = @address.split(',')[0].to_i + lines.length
+        @current = sp_address[0].to_i + lines.length
       else
         @cmd_flg = false
         return
       end
-    elsif @address.split(',')[1].to_i <= @buffer.length
+    elsif sp_address[1].to_i <= @buffer.length
       lines.each_with_index do |l, i|
-        @buffer.insert(@address.split(',')[1].to_i + i, l)
+        @buffer.insert(sp_address[1].to_i + i, l)
       end
-      @current = @address.split(',')[1].to_i + lines.length
+      @current = sp_address[1].to_i + lines.length
     else
       @cmd_flg = false
       return
