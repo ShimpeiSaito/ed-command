@@ -12,6 +12,7 @@ class Ed
     @buffer = [] # バッファ
     @current = 0 # カレント行
     @prompt = '' # プロンプト
+    @file = ''
 
     # プロントプトのオプションがあれば設定する
     OptionParser.new do |op|
@@ -25,6 +26,7 @@ class Ed
     # ファイルがあれば読み込み、なければ標準入力を受け付ける
     begin
       unless ARGV.empty?
+        @file = ARGF.filename
         @buffer = ARGF.readlines
         @current = @buffer.length # カレント行は最後の行
       end
@@ -53,7 +55,7 @@ class Ed
     if @input =~ /\A(#{addr}(?:,#{addr})?)?(#{cmnd})(#{prmt})?\z/
       @address = Regexp.last_match(1)
       @command = Regexp.last_match(2)
-      @parameter = Regexp.last_match(3)
+      @parameter = Regexp.last_match(3).strip
     else
       @cmd_flg = false
       return
@@ -61,7 +63,7 @@ class Ed
 
     begin
       address_replace
-      # p @address, @command, @parameter
+      p @address, @command, @parameter
       send("command_#{@command}")
     rescue StandardError
       @cmd_flg = false
@@ -105,6 +107,8 @@ class Ed
 
   # アドレスのバリデーション
   def address_validate
+    @address = @current.to_s if @address.nil?
+
     sp_address = @address.split(',')
 
     # アドレスに0があるならエラー
@@ -122,6 +126,18 @@ class Ed
     false
   end
 
+  def get_inputs
+    lines = []
+    loop do
+      lines << $stdin.gets.chomp
+      if lines.last == '.'
+        lines.pop
+        break
+      end
+    end
+    lines
+  end
+
   def command_q
     unless @address == '' || @parameter == ''
       @cmd_flg = false
@@ -131,8 +147,6 @@ class Ed
   end
 
   def command_p
-    @address = @current.to_s if @address.nil?
-
     return if address_validate
 
     sp_address = @address.split(',')
@@ -158,8 +172,6 @@ class Ed
   end
 
   def command_n
-    @address = @current.to_s if @address.nil?
-
     return if address_validate
 
     sp_address = @address.split(',')
@@ -241,20 +253,11 @@ class Ed
   end
 
   def command_a
-    @address = @current.to_s if @address.nil?
-
     return if address_validate
 
     sp_address = @address.split(',')
 
-    lines = []
-    loop do
-      lines << $stdin.gets.chomp
-      if lines.last == '.'
-        lines.pop
-        break
-      end
-    end
+    lines = get_inputs
 
     if sp_address.length == 1
       if sp_address[0].to_i <= @buffer.length
@@ -284,24 +287,16 @@ class Ed
   end
 
   def command_f
-    # TODO: Implement me.
+    @file = @parameter unless @parameter == ''
+    puts @file
   end
 
   def command_i
-    @address = @current.to_s if @address.nil?
-
     return if address_validate
 
     sp_address = @address.split(',')
 
-    lines = []
-    loop do
-      lines << $stdin.gets.chomp
-      if lines.last == '.'
-        lines.pop
-        break
-      end
-    end
+    lines = get_inputs
 
     if sp_address.length == 1
       if sp_address[0].to_i <= @buffer.length
