@@ -1,6 +1,6 @@
-aaaf
-afaf
-ccc
-xxxx
-af
-o
+Hello!
+I'm Shimpei.
+I'm a college student.
+I like Sushi.
+My hobby is driving!
+Thank you.
