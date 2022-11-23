@@ -349,7 +349,20 @@ class Ed
   end
 
   def command_=
-    # TODO: Implement me.
+    @address = @buffer.length.to_s if @address.nil?
+
+    return if address_validate
+
+    sp_address = @address.split(',')
+
+    sp_address << sp_address[0] if sp_address.length == 1
+
+    if sp_address[1].to_i <= @buffer.length
+      puts sp_address[1].to_i
+    else
+      @cmd_flg = false
+      return
+    end
   end
 
   # エラー時に?を表示
