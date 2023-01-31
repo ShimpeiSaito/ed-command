@@ -52,11 +52,11 @@ class Ed
   # コマンドの解析と処理
   def _eval
     addr = '(?:\d+|[.$,;]|\/.*\/)'
-    cmnd = '(?:wq|[acdfijnpqrw=]|\z)'
+    cmnd = '(?:wq +|[wf] +|[acdijnpqr=]|\z)'
     prmt = '(?:.*)'
     if @input =~ /\A(#{addr}(?:,#{addr})?)?(#{cmnd})(#{prmt})?\z/
       @address = Regexp.last_match(1)
-      @command = Regexp.last_match(2)
+      @command = Regexp.last_match(2).strip
       @parameter = Regexp.last_match(3).strip
     else
       @cmd_flg = false
